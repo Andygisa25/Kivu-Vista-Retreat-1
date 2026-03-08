@@ -4,26 +4,212 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kivu Vista Retreat</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sand:    #f5f0e8;
+      --dark:    #1a1a1a;
+      --mid:     #3d3d3d;
+      --accent:  #7a9e87;
+      --accent2: #b5ceba;
+      --light:   #fafaf7;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Georgia', serif; background: var(--light); color: var(--dark); }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 60px;
+      background: rgba(250,250,247,0.92); backdrop-filter: blur(8px);
+      border-bottom: 1px solid #e8e4dc;
+    }
+    .logo-svg { display: flex; align-items: center; text-decoration: none; }
+    nav ul { list-style: none; display: flex; gap: 36px; }
+    nav ul a { text-decoration: none; font-family: Arial, sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--mid); transition: color 0.3s; }
+    nav ul a:hover { color: var(--accent); }
+
+    /* HERO */
+    .hero {
+      height: 100vh;
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      text-align: center;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background-image: url('images/hero.jpg');
+      background-size: cover; background-position: center;
+      transform: scale(1.05);
+      transition: transform 8s ease;
+    }
+    .hero:hover .hero-bg { transform: scale(1); }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(160deg, rgba(15,30,20,0.72) 0%, rgba(20,45,30,0.58) 50%, rgba(30,60,40,0.45) 100%);
+    }
+    .hero-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
+    .hero-tag { font-family: Arial, sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent2); margin-bottom: 24px; }
+    .hero h1 { font-size: clamp(42px, 7vw, 80px); color: #fff; font-weight: 400; line-height: 1.1; margin-bottom: 24px; }
+    .hero h1 em { font-style: italic; color: var(--accent2); }
+    .hero p { font-family: Arial, sans-serif; font-size: 15px; color: rgba(255,255,255,0.75); max-width: 440px; line-height: 1.8; margin-bottom: 48px; }
+    .scroll-hint {
+      position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); z-index: 2;
+      font-family: Arial, sans-serif; font-size: 11px; letter-spacing: 2px;
+      color: rgba(255,255,255,0.5); text-transform: uppercase;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .scroll-hint::after { content: ''; width: 1px; height: 40px; background: rgba(255,255,255,0.3); animation: scrollLine 2s infinite; }
+    @keyframes scrollLine { 0%,100%{opacity:0.2;transform:scaleY(0.4)} 50%{opacity:1;transform:scaleY(1)} }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-block; padding: 14px 38px; border: 1px solid var(--accent2); color: #fff;
+      font-family: Arial, sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+      text-decoration: none; background: transparent; cursor: pointer; transition: background 0.3s, color 0.3s;
+    }
+    .btn:hover { background: var(--accent2); color: var(--dark); }
+    .btn-dark {
+      display: inline-block; background: var(--dark); color: #fff; border: 1px solid var(--dark);
+      font-family: Arial, sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+      padding: 14px 38px; text-decoration: none; cursor: pointer; transition: background 0.3s, border-color 0.3s;
+    }
+    .btn-dark:hover { background: var(--accent); border-color: var(--accent); }
+    .btn-sm { padding: 10px 22px; font-size: 10px; }
+
+    /* SECTIONS */
+    section { padding: 100px 60px; }
+    .section-label { font-family: Arial, sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+    .section-title { font-size: clamp(28px, 4vw, 44px); font-weight: 400; line-height: 1.2; }
+    .section-title em { font-style: italic; color: var(--accent); }
+    .divider { width: 48px; height: 1px; background: var(--accent); margin: 24px 0; }
+
+    /* ABOUT */
+    #about { background: var(--sand); }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; max-width: 1100px; margin: 0 auto; }
+    .about-text p { font-family: Arial, sans-serif; font-size: 15px; color: var(--mid); line-height: 1.9; margin-bottom: 16px; }
+    .about-image-wrap { position: relative; }
+    .about-image-wrap img {
+      width: 100%; height: 480px; object-fit: cover;
+      display: block;
+    }
+    .about-image-badge {
+      position: absolute; bottom: -20px; right: -20px;
+      background: var(--accent); color: #fff; padding: 24px;
+      display: flex; flex-direction: column; gap: 4px; min-width: 120px;
+    }
+    .about-image-badge .num { font-size: 32px; font-family: Georgia, serif; }
+    .about-image-badge .lbl { font-family: Arial, sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.85; }
+
+    /* STATS ROW */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; max-width: 1100px; margin: 60px 0 0 0; }
+    .stat-card { background: var(--accent); padding: 28px 24px; color: #fff; display: flex; flex-direction: column; gap: 6px; }
+    .stat-card:nth-child(2) { background: var(--dark); }
+    .stat-card:nth-child(3) { background: #4a7a5c; }
+    .stat-card .num { font-size: 32px; font-family: Georgia, serif; }
+    .stat-card .lbl { font-family: Arial, sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; }
+
+    /* ROOMS */
+    #rooms { background: var(--light); }
+    .rooms-intro { max-width: 560px; margin-bottom: 60px; }
+    .rooms-intro p { font-family: Arial, sans-serif; font-size: 15px; color: var(--mid); line-height: 1.8; margin-top: 16px; }
+    .rooms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; max-width: 1100px; }
+    .room-card { background: #fff; }
+    .room-banner { height: 200px; display: flex; align-items: flex-end; padding: 20px; position: relative; }
+    .room-banner.r1 { background: linear-gradient(135deg, #2e4a38, #5a8a6a); }
+    .room-banner.r2 { background: linear-gradient(135deg, #1a2e22, #3d6b52); }
+    .room-banner.r3 { background: linear-gradient(135deg, #3d3d2e, #7a7a5a); }
+    .room-banner-icon { font-size: 48px; position: absolute; top: 20px; right: 20px; opacity: 0.5; }
+    .room-banner-label { color: rgba(255,255,255,0.9); font-size: 13px; letter-spacing: 2px; text-transform: uppercase; font-family: Arial, sans-serif; }
+    .room-body { padding: 28px; }
+    .room-body h3 { font-size: 20px; font-weight: 400; margin-bottom: 8px; }
+    .room-sub { font-family: Arial, sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+    .room-body p { font-family: Arial, sans-serif; font-size: 13px; color: var(--mid); line-height: 1.8; margin-bottom: 20px; }
+    .room-amenities { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .tag { font-family: Arial, sans-serif; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; background: var(--sand); color: var(--mid); padding: 4px 10px; }
+    .room-price { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e8e4dc; padding-top: 20px; }
+    .room-price .price { font-size: 22px; }
+    .room-price .per { font-family: Arial, sans-serif; font-size: 11px; color: #999; margin-top: 2px; }
+
+    /* BOOK */
+    #book { background: var(--dark); color: #fff; }
+    .book-inner { max-width: 800px; margin: 0 auto; }
+    #book .section-label { color: var(--accent2); }
+    #book .section-title { color: #fff; }
+    #book .divider { background: var(--accent2); }
+    #book .section-title em { color: var(--accent2); }
+    .book-sub { font-family: Arial, sans-serif; font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.8; margin-top: 8px; }
+    .book-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label { font-family: Arial, sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+    .form-group input, .form-group select, .form-group textarea {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+      padding: 14px 16px; color: #fff; font-family: Arial, sans-serif; font-size: 14px; outline: none; transition: border-color 0.3s;
+    }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(255,255,255,0.3); }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent2); }
+    .form-group select option { background: var(--dark); }
+    .form-group textarea { resize: none; }
+    .btn-block { width: 100%; text-align: center; padding: 16px; font-size: 12px; }
+
+    /* FOOTER */
+    footer {
+      background: #111; color: rgba(255,255,255,0.5); padding: 48px 60px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: Arial, sans-serif; font-size: 12px;
+    }
+    .footer-logo-wrap { display: flex; align-items: center; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { color: rgba(255,255,255,0.4); text-decoration: none; letter-spacing: 1px; transition: color 0.3s; }
+    .footer-links a:hover { color: var(--accent2); }
+
+    @media (max-width: 768px) {
+      nav { padding: 12px 20px; }
+      nav ul { gap: 20px; }
+      section { padding: 70px 20px; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .about-image-badge { bottom: 10px; right: 10px; }
+      .stats-row { grid-template-columns: 1fr; }
+      .rooms-grid { grid-template-columns: 1fr; }
+      .book-form { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 20px; text-align: center; }
+    }
+  </style>
 </head>
 <body>
 
 <!-- NAV -->
 <nav>
-  <a class="logo" href="#">Kivu <span>Vista</span> Retreat</a>
+  <a class="logo-svg" href="#home">
+    <svg width="200" height="48" viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="10,36 20,18 26,26 34,10 44,36" stroke="#7a9e87" stroke-width="1.8" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      <line x1="8" y1="36" x2="46" y2="36" stroke="#1a1a1a" stroke-width="1.2"/>
+      <line x1="10" y1="40" x2="44" y2="40" stroke="#7a9e87" stroke-width="0.9" opacity="0.6"/>
+      <line x1="13" y1="44" x2="41" y2="44" stroke="#7a9e87" stroke-width="0.7" opacity="0.35"/>
+      <text x="56" y="24" font-family="Georgia, serif" font-size="14" fill="#1a1a1a" letter-spacing="2">KIVU VISTA</text>
+      <text x="57" y="38" font-family="Arial, sans-serif" font-size="8" fill="#7a9e87" letter-spacing="4">RETREAT</text>
+    </svg>
+  </a>
   <ul>
     <li><a href="#about">About</a></li>
-    <li><a href="#rooms">Rooms</a></li>
+    <li><a href="#rooms">Accommodation</a></li>
+    <li><a href="#dining">Dining</a></li>
     <li><a href="#book">Book</a></li>
   </ul>
 </nav>
 
 <!-- HERO -->
 <section class="hero" id="home">
-  <p class="hero-tag">Near Lake Kivu, Rwanda</p>
-  <h1>Where stillness<br>meets the <em>lake view</em></h1>
-  <p>A modern retreat nestled near the shores of Lake Kivu — 14 rooms designed for rest, reflection, and reconnection.</p>
-  <a href="#book" class="btn">Reserve Your Stay</a>
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-tag">Near Lake Kivu, Rwanda</p>
+    <h1>Where stillness<br>meets the <em>lake view</em></h1>
+    <p>A modern retreat nestled near the shores of Lake Kivu — 14 rooms designed for rest, reflection, and reconnection.</p>
+    <a href="#book" class="btn">Reserve Your Stay</a>
+  </div>
   <div class="scroll-hint">Scroll</div>
 </section>
 
@@ -39,12 +225,18 @@
       <br>
       <a href="#rooms" class="btn-dark">Explore Rooms</a>
     </div>
-    <div class="about-visual">
-      <div class="about-card"><span class="num">14</span><span class="lbl">Rooms</span></div>
-      <div class="about-card"><span class="num">∞</span><span class="lbl">Lake Views</span></div>
-      <div class="about-card"><span class="num">24/7</span><span class="lbl">Service</span></div>
-      <div class="about-card"><span class="num">RW</span><span class="lbl">Rwanda</span></div>
+    <div class="about-image-wrap">
+      <img src="images/exterior.jpg" alt="Kivu Vista Retreat exterior" />
+      <div class="about-image-badge">
+        <span class="num">14</span>
+        <span class="lbl">Rooms</span>
+      </div>
     </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><span class="num">14</span><span class="lbl">Rooms Available</span></div>
+    <div class="stat-card"><span class="num">24/7</span><span class="lbl">Guest Service</span></div>
+    <div class="stat-card"><span class="num">∞</span><span class="lbl">Lake Views</span></div>
   </div>
 </section>
 
@@ -52,78 +244,218 @@
 <section id="rooms">
   <div class="rooms-intro">
     <p class="section-label">Accommodations</p>
-    <h2 class="section-title">Choose your <em>perfect room</em></h2>
+    <h2 class="section-title">Choose your <em>perfect stay</em></h2>
     <div class="divider"></div>
-    <p>All 14 rooms are designed with natural light, clean lines, and your comfort in mind. Whether you're travelling solo, as a couple, or with family — we have a space for you.</p>
+    <p>14 unique rooms across 6 categories — from intimate studios to wellness spaces. Every room has been thoughtfully designed with comfort, natural light, and the beauty of Lake Kivu in mind.</p>
   </div>
-  <div class="rooms-grid">
 
+  <!-- CATEGORY LABEL -->
+  <div style="margin-bottom:12px;">
+    <span style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#7a9e87;">⭐ VIP · 2 Rooms</span>
+  </div>
+  <div class="rooms-grid" style="margin-bottom:40px;">
+    <div class="room-card" style="grid-column:span 2;">
+      <div class="room-banner r2" style="height:220px;">
+        <span class="room-banner-icon">👑</span>
+        <span class="room-banner-label">VIP Studio Suite</span>
+      </div>
+      <div class="room-body">
+        <h3>Lake View Studio Suite</h3>
+        <p class="room-sub">VIP · 2 Available</p>
+        <div class="room-amenities">
+          <span class="tag">WiFi</span><span class="tag">AC</span><span class="tag">Lake View Balcony</span><span class="tag">Living Room</span><span class="tag">Home Office</span><span class="tag">Kitchenette</span><span class="tag">Breakfast</span>
+        </div>
+        <p>Our most exclusive accommodation. Each VIP Studio Suite features a private balcony with unobstructed views of Lake Kivu, a cosy living area, a dedicated workspace, a fully equipped kitchenette, and a luxury bathroom — perfect for extended stays or those who want it all.</p>
+        <div class="room-price">
+          <div><div class="price">$180</div><div class="per">per night</div></div>
+          <a href="#book" class="btn-dark btn-sm">Book</a>
+        </div>
+      </div>
+    </div>
+    <div class="room-card">
+      <div class="room-banner r2" style="background:linear-gradient(135deg,#0f2e22,#2a5a42);">
+        <span class="room-banner-icon">🌊</span>
+      </div>
+      <div class="room-body" style="padding:20px;">
+        <p style="font-family:Arial,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#7a9e87;margin-bottom:8px;">Included in VIP Suite</p>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="font-family:Arial,sans-serif;font-size:13px;color:#3d3d3d;">🛋️ &nbsp;Private living room</div>
+          <div style="font-family:Arial,sans-serif;font-size:13px;color:#3d3d3d;">💼 &nbsp;Small home office</div>
+          <div style="font-family:Arial,sans-serif;font-size:13px;color:#3d3d3d;">🍳 &nbsp;Kitchenette</div>
+          <div style="font-family:Arial,sans-serif;font-size:13px;color:#3d3d3d;">🏞️ &nbsp;Lake view balcony</div>
+          <div style="font-family:Arial,sans-serif;font-size:13px;color:#3d3d3d;">🚿 &nbsp;Luxury bathroom</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELUXE ROOMS -->
+  <div style="margin-bottom:12px;">
+    <span style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#7a9e87;">Deluxe · 4 Rooms</span>
+  </div>
+  <div class="rooms-grid" style="margin-bottom:40px;">
     <div class="room-card">
       <div class="room-banner r1">
+        <span class="room-banner-icon">🏞️</span>
+        <span class="room-banner-label">Deluxe</span>
+      </div>
+      <div class="room-body">
+        <h3>Le Jardin</h3>
+        <p class="room-sub">4 Available · Balcony</p>
+        <div class="room-amenities">
+          <span class="tag">WiFi</span><span class="tag">AC</span><span class="tag">Balcony</span><span class="tag">En-suite</span><span class="tag">Breakfast</span>
+        </div>
+        <p>Spacious and beautifully appointed, these rooms feature a private balcony, a generous bedroom, and a modern en-suite bathroom. Ideal for couples or solo travellers seeking comfort and elegance.</p>
+        <div class="room-price">
+          <div><div class="price">$110</div><div class="per">per night</div></div>
+          <a href="#book" class="btn-dark btn-sm">Book</a>
+        </div>
+      </div>
+    </div>
+    <div class="room-card">
+      <div class="room-banner r1" style="background:linear-gradient(135deg,#2e4a38,#4a7a58);">
+        <span class="room-banner-icon">🌅</span>
+        <span class="room-banner-label">Lake Vista</span>
+      </div>
+      <div class="room-body">
+        <h3>Peak View</h3>
+        <p class="room-sub">3 Available · Lake View Balcony</p>
+        <div class="room-amenities">
+          <span class="tag">WiFi</span><span class="tag">AC</span><span class="tag">Lake View</span><span class="tag">Balcony</span><span class="tag">En-suite</span><span class="tag">Breakfast</span>
+        </div>
+        <p>Wake up to breathtaking views of Lake Kivu from your private balcony. These three rooms are positioned for the best vantage point — perfect for sunrise mornings and golden evenings.</p>
+        <div class="room-price">
+          <div><div class="price">$130</div><div class="per">per night</div></div>
+          <a href="#book" class="btn-dark btn-sm">Book</a>
+        </div>
+      </div>
+    </div>
+    <div class="room-card">
+      <div class="room-banner r3">
         <span class="room-banner-icon">🌿</span>
         <span class="room-banner-label">Standard</span>
       </div>
       <div class="room-body">
-        <h3>Garden Room</h3>
-        <p class="room-sub">Single or Double</p>
+        <h3>Standard Room</h3>
+        <p class="room-sub">1 Available · Cosy & Comfortable</p>
         <div class="room-amenities">
           <span class="tag">WiFi</span><span class="tag">AC</span><span class="tag">En-suite</span><span class="tag">Breakfast</span>
         </div>
-        <p>A serene, well-appointed room surrounded by lush garden views. Perfect for solo travellers or couples seeking a quiet retreat.</p>
+        <p>A compact, well-designed room ideal for solo travellers or short stays. Everything you need — nothing you don't — in a clean and comfortable setting.</p>
         <div class="room-price">
-          <div>
-            <div class="price">$65</div>
-            <div class="per">per night</div>
-          </div>
+          <div><div class="price">$65</div><div class="per">per night</div></div>
           <a href="#book" class="btn-dark btn-sm">Book</a>
         </div>
       </div>
     </div>
+  </div>
 
+  <!-- WELLNESS -->
+  <div style="margin-bottom:12px;margin-top:40px;">
+    <span style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#7a9e87;">Wellness · 1 Room</span>
+  </div>
+  <div class="rooms-grid" style="margin-bottom:40px;">
     <div class="room-card">
-      <div class="room-banner r2">
-        <span class="room-banner-icon">🏔️</span>
-        <span class="room-banner-label">Deluxe</span>
+      <div class="room-banner" style="background:linear-gradient(135deg,#1a2e3a,#2a4a5a);height:200px;">
+        <span class="room-banner-icon">🏋️</span>
+        <span class="room-banner-label">Fitness Studio</span>
       </div>
       <div class="room-body">
-        <h3>Vista Suite</h3>
-        <p class="room-sub">King Bed · Lake View</p>
+        <h3>Fitness Studio</h3>
+        <p class="room-sub">1 Room · Gym Equipment</p>
         <div class="room-amenities">
-          <span class="tag">WiFi</span><span class="tag">AC</span><span class="tag">Balcony</span><span class="tag">Breakfast</span>
+          <span class="tag">Weights</span><span class="tag">Cardio</span><span class="tag">Mats</span><span class="tag">WiFi</span>
         </div>
-        <p>Our signature room with sweeping views toward Lake Kivu. A private balcony, king bed, and premium finishes for an elevated stay.</p>
+        <p>Stay active during your retreat. Our fitness room is equipped with gym accessories for strength training, cardio and flexibility — available exclusively to guests at no extra cost.</p>
         <div class="room-price">
-          <div>
-            <div class="price">$110</div>
-            <div class="per">per night</div>
-          </div>
-          <a href="#book" class="btn-dark btn-sm">Book</a>
+          <div><div class="price" style="font-size:16px;">Complimentary</div><div class="per">for guests</div></div>
+          <a href="#book" class="btn-dark btn-sm">Book Stay</a>
         </div>
       </div>
     </div>
-
     <div class="room-card">
-      <div class="room-banner r3">
-        <span class="room-banner-icon">🏡</span>
-        <span class="room-banner-label">Family</span>
+      <div class="room-banner" style="background:linear-gradient(135deg,#2e1a2e,#5a3a5a);height:200px;">
+        <span class="room-banner-icon">🧖</span>
+        <span class="room-banner-label">Spa & Sauna</span>
       </div>
       <div class="room-body">
-        <h3>Family Retreat</h3>
-        <p class="room-sub">Up to 4 Guests</p>
+        <h3>Sauna, Spa & Massage</h3>
+        <p class="room-sub">Wellness Experience</p>
         <div class="room-amenities">
-          <span class="tag">WiFi</span><span class="tag">AC</span><span class="tag">Kitchenette</span><span class="tag">Breakfast</span>
+          <span class="tag">Sauna</span><span class="tag">Massage</span><span class="tag">Spa Treatments</span>
         </div>
-        <p>Spacious and warm, the Family Retreat features two bedrooms, a shared lounge, and a kitchenette — ideal for families or small groups.</p>
+        <p>Unwind completely in our dedicated wellness space offering sauna sessions, professional massage treatments, and curated spa experiences — the perfect complement to a lakeside retreat.</p>
         <div class="room-price">
-          <div>
-            <div class="price">$160</div>
-            <div class="per">per night</div>
-          </div>
-          <a href="#book" class="btn-dark btn-sm">Book</a>
+          <div><div class="price" style="font-size:16px;">From $30</div><div class="per">per session</div></div>
+          <a href="#book" class="btn-dark btn-sm">Enquire</a>
         </div>
       </div>
     </div>
+    <div class="room-card" style="background:#f5f0e8;display:flex;align-items:center;justify-content:center;padding:28px;flex-direction:column;gap:12px;">
+      <div style="font-size:40px;">✨</div>
+      <p style="font-family:Arial,sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#7a9e87;text-align:center;">More Coming Soon</p>
+      <p style="font-family:Arial,sans-serif;font-size:13px;color:#888;text-align:center;line-height:1.7;">Additional wellness amenities are in development. Contact us for our latest offerings.</p>
+    </div>
+  </div>
 
+  <!-- CONFERENCE -->
+  <div style="margin-bottom:12px;">
+    <span style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#7a9e87;">Events & Business</span>
+  </div>
+  <div style="background:#fff;max-width:1100px;display:grid;grid-template-columns:1fr 1fr;gap:0;">
+    <div style="background:linear-gradient(135deg,#1a2b22,#2e4a38);min-height:280px;display:flex;flex-direction:column;justify-content:flex-end;padding:32px;position:relative;">
+      <span style="position:absolute;top:24px;right:24px;font-size:48px;opacity:0.4;">🏛️</span>
+      <span style="font-family:Arial,sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#b5ceba;">Lake View · Conference</span>
+    </div>
+    <div style="padding:36px;">
+      <h3 style="font-size:22px;font-weight:400;margin-bottom:8px;">Conference Room</h3>
+      <p style="font-family:Arial,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#7a9e87;margin-bottom:16px;">Full Lake View · Events & Meetings</p>
+      <div class="room-amenities">
+        <span class="tag">Lake View</span><span class="tag">Projector</span><span class="tag">WiFi</span><span class="tag">AC</span><span class="tag">Catering</span><span class="tag">Whiteboard</span>
+      </div>
+      <p style="font-family:Arial,sans-serif;font-size:13px;color:#3d3d3d;line-height:1.8;margin-bottom:20px;">A large, light-filled conference room with panoramic views of Lake Kivu — an inspiring setting for corporate retreats, workshops, seminars, private events and team meetings. Equipped with modern presentation technology and supported by our in-house catering team.</p>
+      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e8e4dc;padding-top:20px;">
+        <div>
+          <div style="font-size:18px;font-family:Georgia,serif;">Half & Full Day</div>
+          <div style="font-family:Arial,sans-serif;font-size:11px;color:#999;margin-top:2px;">rates on request</div>
+        </div>
+        <a href="#book" class="btn-dark btn-sm">Enquire</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DINING -->
+<section id="dining" style="background:#1a2b22; color:#fff;">
+  <div style="max-width:1100px; margin:0 auto;">
+    <p class="section-label" style="color:#b5ceba;">Dining</p>
+    <h2 class="section-title" style="color:#fff;">Taste of <em style="color:#b5ceba;">Rwanda</em></h2>
+    <div class="divider" style="background:#b5ceba;"></div>
+    <p style="font-family:Arial,sans-serif;font-size:15px;color:rgba(255,255,255,0.65);line-height:1.9;max-width:620px;margin-bottom:60px;">Our restaurant celebrates the flavours of Rwanda and the Great Lakes region — fresh catches from Lake Kivu, locally grown vegetables, and dishes crafted with warmth and care. Whether it's a quiet breakfast on the terrace or a candlelit dinner overlooking the garden, every meal is an experience.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;max-width:1100px;">
+
+      <div style="background:#223d2e;padding:36px 28px;">
+        <div style="font-size:32px;margin-bottom:16px;">🌅</div>
+        <h3 style="font-size:18px;font-weight:400;margin-bottom:8px;color:#fff;">Breakfast</h3>
+        <p style="font-family:Arial,sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#b5ceba;margin-bottom:14px;">7:00 AM – 10:00 AM</p>
+        <p style="font-family:Arial,sans-serif;font-size:13px;color:rgba(255,255,255,0.6);line-height:1.8;">A fresh spread of local fruits, eggs, freshly baked bread, Rwandan honey and imported options — included with every room.</p>
+      </div>
+
+      <div style="background:#2e4a38;padding:36px 28px;">
+        <div style="font-size:32px;margin-bottom:16px;">🍽️</div>
+        <h3 style="font-size:18px;font-weight:400;margin-bottom:8px;color:#fff;">Lunch & Dinner</h3>
+        <p style="font-family:Arial,sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#b5ceba;margin-bottom:14px;">12:00 PM – 9:00 PM</p>
+        <p style="font-family:Arial,sans-serif;font-size:13px;color:rgba(255,255,255,0.6);line-height:1.8;">Grilled tilapia from Lake Kivu, brochettes, Rwandan stew, and international favourites — served in our open-air restaurant.</p>
+      </div>
+
+      <div style="background:#223d2e;padding:36px 28px;">
+        <div style="font-size:32px;margin-bottom:16px;">🥂</div>
+        <h3 style="font-size:18px;font-weight:400;margin-bottom:8px;color:#fff;">Bar & Terrace</h3>
+        <p style="font-family:Arial,sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#b5ceba;margin-bottom:14px;">10:00 AM – 11:00 PM</p>
+        <p style="font-family:Arial,sans-serif;font-size:13px;color:rgba(255,255,255,0.6);line-height:1.8;">Sundowners, fresh juices, Rwandan coffee and cocktails — best enjoyed on the terrace as the sun sets over Lake Kivu.</p>
+      </div>
+
+    </div>
   </div>
 </section>
 
@@ -163,9 +495,12 @@
         <label>Room Type</label>
         <select>
           <option value="">Select a room</option>
-          <option>Garden Room — $65/night</option>
-          <option>Vista Suite — $110/night</option>
-          <option>Family Retreat — $160/night</option>
+          <option>Studio Suite (VIP) — $180/night</option>
+          <option>Peak View — $130/night</option>
+          <option>Le Jardin — $110/night</option>
+          <option>Standard Room — $65/night</option>
+          <option>Spa / Massage Session — From $30</option>
+          <option>Conference Room — Rates on request</option>
         </select>
       </div>
       <div class="form-group">
@@ -181,7 +516,7 @@
         <label>Special Requests</label>
         <textarea rows="3" placeholder="Any dietary requirements, accessibility needs, or special occasions..."></textarea>
       </div>
-      <div class="form-submit full">
+      <div class="form-group full">
         <button class="btn btn-block">Send Reservation Request</button>
       </div>
     </div>
@@ -190,12 +525,22 @@
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">Kivu <span>Vista</span> Retreat</div>
-  <div class="footer-info">Near Lake Kivu, Rwanda &nbsp;·&nbsp; info@kivuvistaretreaat.rw</div>
+  <div class="footer-logo-wrap">
+    <svg width="180" height="44" viewBox="0 0 180 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="10,32 20,16 26,24 34,8 44,32" stroke="#b5ceba" stroke-width="1.6" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      <line x1="8" y1="32" x2="46" y2="32" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+      <line x1="10" y1="36" x2="44" y2="36" stroke="#b5ceba" stroke-width="0.8" opacity="0.5"/>
+      <line x1="13" y1="40" x2="41" y2="40" stroke="#b5ceba" stroke-width="0.6" opacity="0.3"/>
+      <text x="56" y="22" font-family="Georgia, serif" font-size="13" fill="rgba(255,255,255,0.85)" letter-spacing="2">KIVU VISTA</text>
+      <text x="57" y="35" font-family="Arial, sans-serif" font-size="7.5" fill="#b5ceba" letter-spacing="4">RETREAT</text>
+    </svg>
+  </div>
+  <div>Near Lake Kivu, Rwanda &nbsp;·&nbsp; info@kivusvistaretreat.rw</div>
   <div class="footer-links">
     <a href="#home">Home</a>
     <a href="#about">About</a>
-    <a href="#rooms">Rooms</a>
+    <a href="#rooms">Accommodation</a>
+    <a href="#dining">Dining</a>
     <a href="#book">Book</a>
   </div>
 </footer>
